@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CMatrix w HTML</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      overflow: hidden;
+      color: lime;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const letters = "アァイィウヴエカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+
+    // Każda kolumna przechowuje Y (w rzędach)
+    const drops = Array(columns).fill(0);
+
+    // Przechowujemy poprzednie znaki główek, aby je przemalować na zielono
+    const previousChars = Array(columns).fill(null);
+
+    function draw() {
+      // Półprzezroczyste tło
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < columns; i++) {
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+
+        // Losuj znak na główkę
+        const char = letters[Math.floor(Math.random() * letters.length)];
+
+        // Zielony ogon: poprzedni znak
+        if (drops[i] > 0 && previousChars[i]) {
+          ctx.fillStyle = "#0F0";
+          ctx.fillText(previousChars[i].char, x, (drops[i] - 1) * fontSize);
+        }
+
+        // Biała główka
+        ctx.fillStyle = "#FFF";
+        ctx.fillText(char, x, y);
+
+        // Zapisz ten znak jako ostatnią główkę
+        previousChars[i] = { char };
+
+        // Resetuj kolumnę z niewielką szansą
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+          previousChars[i] = null;
+        } else {
+          drops[i]++;
+        }
+      }
+    }
+
+    setInterval(draw, 33);
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
