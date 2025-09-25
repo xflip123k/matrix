@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Screesaver</title>
+  <title>screensaver</title>
   <style>
     body {
       margin: 0;
@@ -33,14 +33,14 @@
     const fontSize = 16;
     const columns = Math.floor(canvas.width / fontSize);
 
-
+    
     const drops = Array(columns).fill(0);
 
-    
+
     const previousChars = Array(columns).fill(null);
 
     function draw() {
-\
+
       ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -50,17 +50,23 @@
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
+
         const char = letters[Math.floor(Math.random() * letters.length)];
+
 
         if (drops[i] > 0 && previousChars[i]) {
           ctx.fillStyle = "#0F0";
           ctx.fillText(previousChars[i].char, x, (drops[i] - 1) * fontSize);
         }
 
-      
+
         ctx.fillStyle = "#FFF";
         ctx.fillText(char, x, y);
+
+
         previousChars[i] = { char };
+
+
         if (y > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
           previousChars[i] = null;
