@@ -1,88 +1,130 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Matrix ScreenSaver</title>
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      overflow: hidden;
-      color: lime;
-      font-family: monospace;
-      font-size: 14px;
-    }
-    canvas {
-      display: block;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMatrix</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+}
+
+canvas {
+    display: block;
+}
+</style>
 </head>
 <body>
-  <canvas id="matrix"></canvas>
 
-  <script>
-    const autor = "filip k. 2025" 
-    const canvas = document.getElementById("matrix");
-    const ctx = canvas.getContext("2d");
+<canvas id="matrix"></canvas>
 
+<script>
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+}
 
-    const letters = "アァイィウヴエカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+resize();
+window.addEventListener("resize", resize);
 
-    const fontSize = 16;
-    const columns = Math.floor(canvas.width / fontSize);
+const chars =
+"アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+const fontSize = 16;
+let columns = Math.floor(canvas.width / fontSize);
 
-    const drops = Array(columns).fill(0);
+const trailLength = 25;
 
+let drops = [];
+let trails = [];
 
-    const previousChars = Array(columns).fill(null);
+function init() {
+    columns = Math.floor(canvas.width / fontSize);
 
-    function draw() {
+    drops = [];
+    trails = [];
+
+    for (let i = 0; i < columns; i++) {
+        drops[i] = Math.floor(Math.random() * -100);
+        trails[i] = [];
+    }
+}
+
+init();
+
+window.addEventListener("resize", init);
+
+function randomChar() {
+    return chars[Math.floor(Math.random() * chars.length)];
+}
+
+function draw() {
 
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.font = fontSize + "px monospace";
+    ctx.font = fontSize + "px monospace";
 
-      for (let i = 0; i < columns; i++) {
+    for (let i = 0; i < columns; i++) {
+
         const x = i * fontSize;
-        const y = drops[i] * fontSize;
 
+        const char = randomChar();
 
-        const char = letters[Math.floor(Math.random() * letters.length)];
+        trails[i].unshift({
+            char: char,
+            y: drops[i]
+        });
 
-
-        if (drops[i] > 0 && previousChars[i]) {
-          ctx.fillStyle = "#0F0";
-          ctx.fillText(previousChars[i].char, x, (drops[i] - 1) * fontSize);
+        if (trails[i].length > trailLength) {
+            trails[i].pop();
         }
 
+        for (let j = 0; j < trails[i].length; j++) {
 
-        ctx.fillStyle = "#FFF";
-        ctx.fillText(char, x, y);
+            const item = trails[i][j];
+            const y = item.y * fontSize;
 
+            if (y < 0 || y > canvas.height + fontSize)
+                continue;
 
-        previousChars[i] = { char };
+            if (j === 0) {
 
+                ctx.fillStyle = "#FFFFFF";
 
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-          previousChars[i] = null;
-        } else {
-          drops[i]++;
+            } else {
+
+                const green = Math.max(
+                    30,
+                    255 - Math.floor((j / trailLength) * 225)
+                );
+
+                ctx.fillStyle = `rgb(0,${green},0)`;
+            }
+
+            ctx.fillText(item.char, x, y);
         }
-      }
+
+        drops[i]++;
+
+        if (
+            drops[i] * fontSize > canvas.height + trailLength * fontSize &&
+            Math.random() > 0.975
+        ) {
+            drops[i] = Math.floor(Math.random() * -50);
+            trails[i] = [];
+        }
     }
+}
 
-    setInterval(draw, 33);
+setInterval(draw, 33);
+</script>
 
-    window.addEventListener("resize", () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
-  </script>
 </body>
 </html>
