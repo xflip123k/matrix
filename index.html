@@ -39,7 +39,7 @@ const chars =
 const fontSize = 16;
 let columns = Math.floor(canvas.width / fontSize);
 
-const trailLength = 25;
+const trailLength = 75;
 
 let drops = [];
 let trails = [];
@@ -102,7 +102,7 @@ function draw() {
 
                 const green = Math.max(
                     30,
-                    255 - Math.floor((j / trailLength) * 225)
+                    255 - Math.floor((j / trailLength) * 170)
                 );
 
                 ctx.fillStyle = `rgb(0,${green},0)`;
